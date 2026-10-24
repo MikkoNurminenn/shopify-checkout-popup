@@ -1,0 +1,16 @@
+{
+  "name": "shopify-checkout-popup",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Open a real Shopify checkout in a separate browser window while keeping your configurator open.",
+  "exports": {
+    ".": "./src/checkoutPopup.js",
+    "./cart": "./src/cartPermalink.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "demo": "python3 -m http.server 8000 --bind 127.0.0.1"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shopify checkout popup example</title>
+<style>
+  :root{font:17px/1.5 system-ui;color:#edf5f7;background:#12232e}
+  body{max-width:620px;margin:8vh auto;padding:24px}
+  h1{line-height:1.15}label{display:block;margin:18px 0}
+  input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #81959e;border-radius:8px;font:inherit}
+  button{padding:14px 20px;background:#c9e9a5;color:#172a22;border:0;border-radius:8px;font:inherit;cursor:pointer}
+  a{color:#c9e9a5}small{color:#b3c5cc}#status{min-height:3em}
+</style>
+<h1>Keep your configurator open.<br>Open Shopify checkout beside it.</h1>
+<p>Use a development store and a real, available product variant from that store.</p>
+<form id="form">
+  <label>Store hostname<input id="store" required placeholder="your-store.myshopify.com" autocomplete="off"></label>
+  <label>Product variant ID<input id="variant" required inputmode="numeric" pattern="[1-9][0-9]*" placeholder="Numeric variant ID" autocomplete="off"></label>
+  <label>Quantity<input id="quantity" required type="number" min="1" step="1" value="1"></label>
+  <button>Open Shopify checkout ↗</button>
+</form>
+<p id="status" role="status"></p>
+<a id="fallback" hidden>Open checkout in this tab →</a>
+<p><small>This opens Shopify's own hosted checkout. It does not place an order or charge a payment.</small></p>
+<script type="module">
+  import { buildCartPermalink } from '../src/cartPermalink.js';
+  import { openCheckoutPopup } from '../src/checkoutPopup.js';
+  const form=document.querySelector('#form'),status=document.querySelector('#status'),fallback=document.querySelector('#fallback');
+  form.addEventListener('submit',event=>{
+    event.preventDefault();fallback.hidden=true;
+    try{
+      const domain=document.querySelector('#store').value;
+      const url=buildCartPermalink({domain,lines:[{variantId:document.querySelector('#variant').value,quantity:Number(document.querySelector('#quantity').value)}]});
+      fallback.href=url;fallback.hidden=false;
+      status.textContent=openCheckoutPopup(url,{domain})
+        ? 'Shopify checkout opened. This page stays open behind it.'
+        : 'Your browser blocked the popup. Use the checkout link below.';
+    }catch(error){status.textContent=error.message;}
+  });
+</script>
+</html>
